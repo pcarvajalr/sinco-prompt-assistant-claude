@@ -1,0 +1,253 @@
+{
+  "name": "sinco-prompt-assistant",
+  "displayName": "Sinco Prompt Assistant",
+  "description": "Genera prompts estructurados para IA a partir de comandos predefinidos del proyecto Génesis",
+  "version": "0.0.1",
+  "publisher": "sinco",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other",
+    "Snippets",
+    "Formatters",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "ai",
+    "prompts",
+    "backend",
+    "genesis",
+    "sinco",
+    "code generation",
+    "assistant"
+  ],
+  "icon": "resources/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sinco/prompt-assistant"
+  },
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
+    "onCommand:sinco.generatePrompt",
+    "onCommand:sinco.generateBackendPrompt",
+    "onCommand:sinco.showCommands",
+    "onView:sincoCommands"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "sinco.generatePrompt",
+        "title": "Generar Prompt",
+        "category": "Sinco"
+      },
+      {
+        "command": "sinco.generateBackendPrompt",
+        "title": "Generar Prompt Backend",
+        "category": "Sinco"
+      },
+      {
+        "command": "sinco.showCommands",
+        "title": "Mostrar Comandos Disponibles",
+        "category": "Sinco"
+      },
+      {
+        "command": "sinco.showHistory",
+        "title": "Mostrar Historial de Prompts",
+        "category": "Sinco",
+        "icon": "$(history)"
+      },
+      {
+        "command": "sinco.clearHistory",
+        "title": "Limpiar Historial",
+        "category": "Sinco"
+      },
+      {
+        "command": "sinco.refreshCommands",
+        "title": "Refrescar Comandos",
+        "category": "Sinco",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "sinco.insertCommand",
+        "title": "Insertar Comando",
+        "category": "Sinco"
+      },
+      {
+        "command": "sinco.insertExample",
+        "title": "Insertar Ejemplo",
+        "category": "Sinco"
+      },
+      {
+        "command": "sinco.openGenerator",
+        "title": "Abrir Generador de Prompts",
+        "category": "Sinco",
+        "icon": "$(add)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "sinco.generatePrompt",
+        "key": "ctrl+shift+p ctrl+shift+g",
+        "mac": "cmd+shift+p cmd+shift+g",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "sinco.generateBackendPrompt",
+        "key": "ctrl+shift+p ctrl+shift+b",
+        "mac": "cmd+shift+p cmd+shift+b",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "sinco.openGenerator",
+        "key": "ctrl+shift+p ctrl+shift+s",
+        "mac": "cmd+shift+p cmd+shift+s"
+      }
+    ],
+    "configuration": {
+      "title": "Sinco Prompt Assistant",
+      "properties": {
+        "sinco.backend.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar comandos Backend"
+        },
+        "sinco.backend.autoGenerate": {
+          "type": "boolean",
+          "default": false,
+          "description": "Generar prompts automáticamente al detectar comandos"
+        },
+        "sinco.backend.showInStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Mostrar estado en la barra de estado"
+        },
+        "sinco.output.format": {
+          "type": "string",
+          "enum": [
+            "markdown",
+            "plain",
+            "json"
+          ],
+          "default": "markdown",
+          "description": "Formato de salida para los prompts generados"
+        },
+        "sinco.genesis.projectPath": {
+          "type": "string",
+          "default": "",
+          "description": "Ruta al proyecto Génesis (opcional)"
+        },
+        "sinco.genesis.autoDetect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Detectar automáticamente proyecto Génesis"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sinco-prompt-assistant",
+          "title": "Sinco Prompt Assistant",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "sinco-prompt-assistant": [
+        {
+          "id": "sincoPromptGenerator",
+          "name": "Generador de Prompts",
+          "type": "webview",
+          "icon": "$(wand)",
+          "contextualTitle": "Sinco Generator"
+        },
+        {
+          "id": "sincoCommands",
+          "name": "Comandos Disponibles",
+          "icon": "$(code)",
+          "contextualTitle": "Comandos Sinco"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "sinco.refreshCommands",
+          "when": "view == sincoCommands",
+          "group": "navigation"
+        },
+        {
+          "command": "sinco.showHistory",
+          "when": "view == sincoCommands",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "sinco.generatePrompt",
+          "when": "editorTextFocus",
+          "group": "sinco@1"
+        }
+      ]
+    },
+    "languages": [
+      {
+        "id": "sinco-commands",
+        "aliases": [
+          "Sinco Commands",
+          "sinco"
+        ],
+        "extensions": [
+          ".sinco"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets/backend.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./snippets/backend.json"
+      },
+      {
+        "language": "javascriptreact",
+        "path": "./snippets/backend.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "./snippets/backend.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@vscode/test-electron": "^2.2.0",
+    "@vscode/vsce": "^2.15.0",
+    "eslint": "^8.28.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "typescript": "^4.9.4"
+  }
+}

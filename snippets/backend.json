@@ -1,0 +1,76 @@
+{
+  "Backend crear": {
+    "prefix": "bcrear",
+    "body": [
+      "Backend.crear(\"${1:resource}\", {",
+      "\t${2:campo}: \"${3:valor}\"",
+      "});"
+    ],
+    "description": "Crear un nuevo recurso en el backend"
+  },
+  "Backend obtener": {
+    "prefix": "bobtener",
+    "body": [
+      "Backend.obtener(\"${1:resource}\"${2:, ${3:idOrQuery}});"
+    ],
+    "description": "Obtener recurso(s) del backend"
+  },
+  "Backend obtener con filtro": {
+    "prefix": "bobtenerf",
+    "body": [
+      "Backend.obtener(\"${1:resource}\", {",
+      "\t${2:campo}: \"${3:valor}\"",
+      "});"
+    ],
+    "description": "Obtener recursos con filtro"
+  },
+  "Backend actualizar": {
+    "prefix": "bactualizar",
+    "body": [
+      "Backend.actualizar(\"${1:resource}\", ${2:id}, {",
+      "\t${3:campo}: \"${4:nuevoValor}\"",
+      "});"
+    ],
+    "description": "Actualizar un recurso existente"
+  },
+  "Backend eliminar": {
+    "prefix": "beliminar",
+    "body": [
+      "Backend.eliminar(\"${1:resource}\", ${2:id});"
+    ],
+    "description": "Eliminar un recurso"
+  },
+  "Backend ejecutar": {
+    "prefix": "bejecutar",
+    "body": [
+      "Backend.ejecutar(\"${1:action}\"${2:, {",
+      "\t${3:parametro}: \"${4:valor}\"",
+      "\\}});"
+    ],
+    "description": "Ejecutar acción personalizada"
+  },
+  "Backend CRUD completo": {
+    "prefix": "bcrud",
+    "body": [
+      "// Crear",
+      "Backend.crear(\"${1:resource}\", {",
+      "\t${2:campo}: \"${3:valor}\"",
+      "});",
+      "",
+      "// Obtener todos",
+      "Backend.obtener(\"${1:resource}\");",
+      "",
+      "// Obtener por ID",
+      "Backend.obtener(\"${1:resource}\", ${4:id});",
+      "",
+      "// Actualizar",
+      "Backend.actualizar(\"${1:resource}\", ${4:id}, {",
+      "\t${2:campo}: \"${5:nuevoValor}\"",
+      "});",
+      "",
+      "// Eliminar",
+      "Backend.eliminar(\"${1:resource}\", ${4:id});"
+    ],
+    "description": "Ejemplo completo de operaciones CRUD"
+  }
+}
