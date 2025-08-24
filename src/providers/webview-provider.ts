@@ -407,8 +407,8 @@ export class SincoWebviewProvider implements vscode.WebviewViewProvider {
 </head>
 <body>
     <div class="header">
-        <h1>🚀 Sinco Prompt Generator</h1>
-        <p>Genera prompts estructurados para IA basados en comandos Backend</p>
+        <h1>🤖 Génesis Prompt Generator</h1>
+        <p>Genera prompts estructurados para IA basados en comandos</p>
     </div>
 
     <div id="projectContext" class="project-context" style="display: none;">
@@ -417,7 +417,7 @@ export class SincoWebviewProvider implements vscode.WebviewViewProvider {
     </div>
 
     <div class="form-section">
-        <div class="form-title">Configurar Comando Backend</div>
+        <div class="form-title">Configurar Comando</div>
         
         <div class="form-group">
             <label for="action">Acción:</label>
