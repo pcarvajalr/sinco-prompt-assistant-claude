@@ -145,6 +145,11 @@
           "type": "boolean",
           "default": true,
           "description": "Detectar automáticamente proyecto Génesis"
+        },
+        "sinco.copilot.integration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar integración con GitHub Copilot Chat"
         }
       }
     },

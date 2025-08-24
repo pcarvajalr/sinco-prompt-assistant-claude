@@ -5,7 +5,9 @@
       "Bash(npm install:*)",
       "Bash(npm run compile:*)",
       "Bash(code .)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "WebSearch",
+      "WebFetch(domain:code.visualstudio.com)"
     ],
     "deny": [],
     "ask": []

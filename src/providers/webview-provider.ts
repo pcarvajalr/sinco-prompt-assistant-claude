@@ -47,6 +47,12 @@ export class SincoWebviewProvider implements vscode.WebviewViewProvider {
           case 'exportPrompt':
             await this.handleExportPrompt(message.prompt, message.format);
             break;
+          case 'sendToCopilot':
+            await this.handleSendToCopilot(message.prompt);
+            break;
+          case 'generateAndSendToCopilot':
+            await this.handleGenerateAndSendToCopilot(message.command);
+            break;
           case 'previewPrompt':
             this.handlePreviewPrompt(message.command);
             break;
@@ -114,6 +120,87 @@ export class SincoWebviewProvider implements vscode.WebviewViewProvider {
     if (uri) {
       await vscode.workspace.fs.writeFile(uri, Buffer.from(prompt, 'utf8'));
       vscode.window.showInformationMessage(`Prompt exportado a ${uri.fsPath}`);
+    }
+  }
+
+  private async handleSendToCopilot(prompt: string) {
+    try {
+      // 0. Verificar si la integración está habilitada
+      const config = vscode.workspace.getConfiguration('sinco');
+      const copilotIntegrationEnabled = config.get('copilot.integration', true);
+      
+      if (!copilotIntegrationEnabled) {
+        vscode.window.showInformationMessage(
+          'La integración con Copilot está deshabilitada. Habilítala en la configuración de Sinco.'
+        );
+        return;
+      }
+
+      // 1. Verificar que Copilot Chat esté disponible
+      const copilotExtension = vscode.extensions.getExtension('GitHub.copilot-chat');
+      if (!copilotExtension) {
+        vscode.window.showErrorMessage(
+          'GitHub Copilot Chat no está instalado. Por favor instala la extensión para usar esta funcionalidad.',
+          'Abrir Marketplace'
+        ).then(selection => {
+          if (selection === 'Abrir Marketplace') {
+            vscode.commands.executeCommand('extension.open', 'GitHub.copilot-chat');
+          }
+        });
+        return;
+      }
+
+      if (!copilotExtension.isActive) {
+        await copilotExtension.activate();
+      }
+
+      // 2. Copiar prompt al clipboard
+      await vscode.env.clipboard.writeText(prompt);
+
+      // 3. Abrir panel de Copilot Chat
+      await vscode.commands.executeCommand('workbench.panel.chat.view.copilot.focus');
+
+      // 4. Mostrar mensaje de instrucción al usuario
+      vscode.window.showInformationMessage(
+        '✅ Prompt enviado a Copilot Chat - Pega con Ctrl+V',
+        { modal: false }
+      );
+        
+    } catch (error) {
+      console.error('Error al enviar a Copilot Chat:', error);
+      
+      // Fallback: solo copiar al clipboard
+      try {
+        await vscode.env.clipboard.writeText(prompt);
+        vscode.window.showWarningMessage(
+          'No se pudo abrir Copilot Chat, pero el prompt fue copiado al portapapeles'
+        );
+      } catch (clipboardError) {
+        vscode.window.showErrorMessage(`Error al procesar el prompt: ${error}`);
+      }
+    }
+  }
+
+  private async handleGenerateAndSendToCopilot(command: BackendCommand) {
+    try {
+      // 1. Generar el prompt
+      const generatedPrompt = PromptGenerator.generateBackendPrompt(command, this._projectContext);
+      
+      // 2. Enviar el prompt a Copilot
+      await this.handleSendToCopilot(generatedPrompt.prompt);
+      
+      // 3. Opcional: mostrar también la vista previa
+      this._view?.webview.postMessage({
+        type: 'promptPreview',
+        prompt: generatedPrompt.prompt
+      });
+      
+    } catch (error) {
+      console.error('Error al generar y enviar a Copilot:', error);
+      this._view?.webview.postMessage({
+        type: 'promptPreview',
+        error: error instanceof Error ? error.message : 'Error desconocido'
+      });
     }
   }
 
@@ -437,6 +524,7 @@ IdUsuarioCreador:int:FK(Usuarios.Id)" onchange="updatePreview()"></textarea>
 
         <div class="button-group">
             <button class="btn-primary" onclick="generatePrompt()">🎯 Generar Prompt</button>
+            <button class="btn-primary" onclick="generateAndSendToCopilot()">🤖 Enviar a Copilot</button>
             <button class="btn-secondary" onclick="previewPrompt()">👁️ Vista Previa</button>
             <button class="btn-secondary" onclick="clearForm()">🗑️ Limpiar</button>
         </div>
@@ -448,6 +536,7 @@ IdUsuarioCreador:int:FK(Usuarios.Id)" onchange="updatePreview()"></textarea>
         <div class="preview-title">📋 Vista Previa del Prompt</div>
         <div id="previewContent" class="preview-content"></div>
         <div class="button-group" style="margin-top: 10px;">
+            <button class="btn-primary" onclick="sendToCopilot()">🤖 Copilot</button>
             <button class="btn-secondary" onclick="copyPrompt()">📋 Copiar</button>
             <button class="btn-secondary" onclick="exportPrompt('markdown')">📄 Exportar MD</button>
             <button class="btn-secondary" onclick="exportPrompt('json')">💾 Exportar JSON</button>
@@ -649,6 +738,36 @@ IdUsuarioCreador:int:FK(Usuarios.Id)" onchange="updatePreview()"></textarea>
                     format: format
                 });
             }
+        }
+
+        function sendToCopilot() {
+            if (currentPrompt) {
+                vscode.postMessage({
+                    type: 'sendToCopilot',
+                    prompt: currentPrompt
+                });
+            } else {
+                showMessage('No hay prompt para enviar a Copilot', 'error');
+            }
+        }
+
+        function generateAndSendToCopilot() {
+            const command = buildCommand();
+            if (!command) {
+                const action = document.getElementById('action').value;
+                if (action === 'crearTabla') {
+                    showMessage('Por favor completa el módulo, nombre de tabla y campos', 'error');
+                } else {
+                    showMessage('Por favor completa al menos la acción y el recurso', 'error');
+                }
+                return;
+            }
+            
+            // Generar el prompt y enviarlo directamente a Copilot
+            vscode.postMessage({
+                type: 'generateAndSendToCopilot',
+                command: command
+            });
         }
 
         function clearForm() {
